@@ -1,0 +1,4 @@
+{
+  "prompt": "Origin: plotted, not generated. Smit Arekar's routed APB UART GDS (github.com/smitarekar/uart-asic-flow, gds/apb_uart_top.gds, OpenLane on Sky130 HD) drawn by tools/plot_gds.py with the 'metal' palette Smit chose on 2026-10-19: every shape from the GDS, solid fills, die plus 3 um margin, 1240 px wide.",
+  "createdAt": "2026-10-20T03:55:35.858Z"
+}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not on the die · Smit Arekar</title>
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  @font-face { font-family: "Inter"; src: url("/assets/fonts/inter-latin-opsz.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+  :root { color-scheme: dark; }
+  html, body { height: 100%; margin: 0; background: #000; }
+  body {
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    color: #f5f5f7;
+    font: 17px/1.47 -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: -0.011em;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+  }
+  .chip {
+    width: 112px;
+    aspect-ratio: 1;
+    margin: 0 auto 32px;
+    border-radius: 14px;
+    background: radial-gradient(130% 100% at 28% 0%, #25272d, #0c0d10);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), inset 0 0 0 1px rgb(255 255 255 / 0.08);
+    display: grid;
+    place-items: center;
+  }
+  .chip span { width: 46%; aspect-ratio: 1; border-radius: 6px; border: 1.5px dashed #5a5c63; }
+  h1 { margin: 0; font-size: clamp(2rem, 1.4rem + 3vw, 3.25rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; }
+  p { margin: 0.9rem auto 0; max-width: 34ch; color: #a1a1a6; font-size: 1.1875rem; }
+  a { color: #2997ff; text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+  a:focus-visible { outline: 2px solid #2997ff; outline-offset: 3px; border-radius: 6px; }
+  .home { display: inline-block; margin-top: 1.6rem; font-size: 1.0625rem; }
+</style>
+</head>
+<body>
+  <main>
+    <div class="chip" aria-hidden="true"><span></span></div>
+    <h1>That block isn't on the die.</h1>
+    <p>The page you're looking for doesn't exist, or it moved.</p>
+    <a class="home" href="/">Back to the floorplan</a>
+  </main>
+</body>
+</html>

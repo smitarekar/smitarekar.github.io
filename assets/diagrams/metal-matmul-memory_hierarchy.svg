@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1780 900" width="1780" height="900">
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+<rect x="0" y="0" width="1780" height="900" fill="#ffffff"/>
+<text x="20" y="34" font-family="Helvetica,Arial,sans-serif" font-size="18" font-weight="bold" fill="#1a1a1a">metal-matmul: memory hierarchy, naive -&gt; tiled -&gt; coalesced</text>
+<text x="20" y="54" font-family="Helvetica,Arial,sans-serif" font-size="12" fill="#666666">same C = A*B math, three different device-memory access patterns</text>
+<rect x="40" y="100" width="540" height="80" rx="8" ry="8" fill="#99f6e4" stroke="#64748b" stroke-width="1.5"/>
+<text x="310.0" y="136.66666666666666" font-family="Helvetica,Arial,sans-serif" font-size="11" font-weight="bold" fill="#1a1a1a" text-anchor="middle">device memory -- full A, B, C</text>
+<text x="310.0" y="150.66666666666666" font-family="Helvetica,Arial,sans-serif" font-size="11" font-weight="bold" fill="#1a1a1a" text-anchor="middle">(matmul_naive)</text>
+<rect x="40" y="280" width="540" height="90" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="310.0" y="321.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#1a1a1a" text-anchor="middle">256 threads (one threadgroup)</text>
+<text x="310.0" y="334.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#1a1a1a" text-anchor="middle">each independently re-reads from device memory</text>
+<path d="M 310.0 180 L 310.0 280" fill="none" stroke="#b85450" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="209.0" y="215.0" width="202" height="14" fill="#ffffff" fill-opacity="0.85"/>
+<text x="310.0" y="225.0" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#333333" text-anchor="middle">K reads per thread, no reuse</text>
+<text x="40" y="460" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#555" text-anchor="start">no threadgroup memory -- every thread</text>
+<text x="40" y="476" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#555" text-anchor="start">re-reads its row of A / col of B</text>
+<text x="40" y="540" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#333" text-anchor="start">device-memory address, 4 consecutive threads in a simdgroup:</text>
+<rect x="40" y="560" width="80" height="40" rx="0" ry="0" fill="#fecaca" stroke="#64748b" stroke-width="1.5"/>
+<text x="80.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">row*K</text>
+<rect x="130" y="560" width="80" height="40" rx="0" ry="0" fill="#fecaca" stroke="#64748b" stroke-width="1.5"/>
+<text x="170.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">(row+1)*K</text>
+<rect x="220" y="560" width="80" height="40" rx="0" ry="0" fill="#fecaca" stroke="#64748b" stroke-width="1.5"/>
+<text x="260.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">(row+2)*K</text>
+<rect x="310" y="560" width="80" height="40" rx="0" ry="0" fill="#fecaca" stroke="#64748b" stroke-width="1.5"/>
+<text x="350.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">(row+3)*K</text>
+<text x="40" y="615" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#b85450" text-anchor="start">strided -- 4 separate transactions</text>
+<rect x="620" y="100" width="540" height="80" rx="8" ry="8" fill="#99f6e4" stroke="#64748b" stroke-width="1.5"/>
+<text x="890.0" y="136.66666666666666" font-family="Helvetica,Arial,sans-serif" font-size="11" font-weight="bold" fill="#1a1a1a" text-anchor="middle">device memory -- full A, B, C</text>
+<text x="890.0" y="150.66666666666666" font-family="Helvetica,Arial,sans-serif" font-size="11" font-weight="bold" fill="#1a1a1a" text-anchor="middle">(matmul_tiled)</text>
+<rect x="620" y="240" width="540" height="70" rx="8" ry="8" fill="#fde68a" stroke="#64748b" stroke-width="1.5"/>
+<text x="890.0" y="271.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#1a1a1a" text-anchor="middle">threadgroup memory: As[16][16], Bs[16][16]</text>
+<text x="890.0" y="284.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#1a1a1a" text-anchor="middle">loaded once per tile, shared by the group</text>
+<path d="M 890.0 180 L 890.0 240" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="747.0" y="195.0" width="286" height="14" fill="#ffffff" fill-opacity="0.85"/>
+<text x="890.0" y="205.0" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#333333" text-anchor="middle">1 read per tile element (not per thread)</text>
+<rect x="620" y="350" width="540" height="70" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="890.0" y="388.3333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#1a1a1a" text-anchor="middle">256 threads compute from the shared tile</text>
+<path d="M 890.0 310 L 890.0 350" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="620" y="460" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#555" text-anchor="start">16x16 threadgroup tile, reused by every thread</text>
+<text x="620" y="476" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#555" text-anchor="start">-- but row=gid.x (strided access)</text>
+<text x="620" y="540" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#333" text-anchor="start">device-memory address, 4 consecutive threads in a simdgroup:</text>
+<rect x="620" y="560" width="80" height="40" rx="0" ry="0" fill="#fecaca" stroke="#64748b" stroke-width="1.5"/>
+<text x="660.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">row*K</text>
+<rect x="710" y="560" width="80" height="40" rx="0" ry="0" fill="#fecaca" stroke="#64748b" stroke-width="1.5"/>
+<text x="750.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">(row+1)*K</text>
+<rect x="800" y="560" width="80" height="40" rx="0" ry="0" fill="#fecaca" stroke="#64748b" stroke-width="1.5"/>
+<text x="840.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">(row+2)*K</text>
+<rect x="890" y="560" width="80" height="40" rx="0" ry="0" fill="#fecaca" stroke="#64748b" stroke-width="1.5"/>
+<text x="930.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">(row+3)*K</text>
+<text x="620" y="615" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#b85450" text-anchor="start">strided -- 4 separate transactions</text>
+<rect x="1200" y="100" width="540" height="80" rx="8" ry="8" fill="#99f6e4" stroke="#64748b" stroke-width="1.5"/>
+<text x="1470.0" y="136.66666666666666" font-family="Helvetica,Arial,sans-serif" font-size="11" font-weight="bold" fill="#1a1a1a" text-anchor="middle">device memory -- full A, B, C</text>
+<text x="1470.0" y="150.66666666666666" font-family="Helvetica,Arial,sans-serif" font-size="11" font-weight="bold" fill="#1a1a1a" text-anchor="middle">(matmul_coalesced)</text>
+<rect x="1200" y="240" width="540" height="70" rx="8" ry="8" fill="#fde68a" stroke="#64748b" stroke-width="1.5"/>
+<text x="1470.0" y="271.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#1a1a1a" text-anchor="middle">threadgroup memory: As[16][16], Bs[16][16]</text>
+<text x="1470.0" y="284.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#1a1a1a" text-anchor="middle">loaded once per tile, shared by the group</text>
+<path d="M 1470.0 180 L 1470.0 240" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="1327.0" y="195.0" width="286" height="14" fill="#ffffff" fill-opacity="0.85"/>
+<text x="1470.0" y="205.0" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#333333" text-anchor="middle">1 read per tile element (not per thread)</text>
+<rect x="1200" y="350" width="540" height="70" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="1470.0" y="388.3333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#1a1a1a" text-anchor="middle">256 threads compute from the shared tile</text>
+<path d="M 1470.0 310 L 1470.0 350" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="1200" y="460" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#555" text-anchor="start">same tile, col=gid.x -- adjacent</text>
+<text x="1200" y="476" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#555" text-anchor="start">threads hit adjacent addresses</text>
+<text x="1200" y="540" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#333" text-anchor="start">device-memory address, 4 consecutive threads in a simdgroup:</text>
+<rect x="1200" y="560" width="80" height="40" rx="0" ry="0" fill="#99f6e4" stroke="#64748b" stroke-width="1.5"/>
+<text x="1240.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">col</text>
+<rect x="1290" y="560" width="80" height="40" rx="0" ry="0" fill="#99f6e4" stroke="#64748b" stroke-width="1.5"/>
+<text x="1330.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">col+1</text>
+<rect x="1380" y="560" width="80" height="40" rx="0" ry="0" fill="#99f6e4" stroke="#64748b" stroke-width="1.5"/>
+<text x="1420.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">col+2</text>
+<rect x="1470" y="560" width="80" height="40" rx="0" ry="0" fill="#99f6e4" stroke="#64748b" stroke-width="1.5"/>
+<text x="1510.0" y="583.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">col+3</text>
+<text x="1200" y="615" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#82b366" text-anchor="start">contiguous -- 1 wide transaction</text>
+<text x="40" y="690" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#555555">matmul_naive and matmul_tiled both use row=gid.x, so consecutive threads in a simdgroup differ by one ROW -- K elements apart in this row-major layout, one memory transaction per thread. matmul_coalesced swaps to col=gid.x: consecutive threads differ by one COLUMN, one</text>
+<text x="40" y="705" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#555555">element apart, so the GPU serves the whole simdgroup with a single wide transaction. This is the only difference between matmul_tiled and matmul_coalesced -- same tiling, same threadgroup-memory reuse, different index-to-thread mapping.</text>
+<rect x="40" y="770" width="14" height="14" fill="#99f6e4" stroke="#64748b" stroke-width="1.25"/>
+<text x="62" y="781" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#333333">Device (global) memory -- large, slow, where full matrices live</text>
+<rect x="40" y="788" width="14" height="14" fill="#fde68a" stroke="#64748b" stroke-width="1.25"/>
+<text x="62" y="799" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#333333">Threadgroup (shared) memory -- small, fast, on-chip, tile-scoped</text>
+<rect x="40" y="806" width="14" height="14" fill="#c7d2fe" stroke="#64748b" stroke-width="1.25"/>
+<text x="62" y="817" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#333333">Compute -- 256 threads per threadgroup</text>
+<rect x="40" y="824" width="14" height="14" fill="#fecaca" stroke="#64748b" stroke-width="1.25"/>
+<text x="62" y="835" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#333333">Strided access -- one memory transaction per thread</text>
+</svg>

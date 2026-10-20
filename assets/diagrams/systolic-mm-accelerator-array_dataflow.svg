@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 1220" width="1360" height="1220">
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+<rect x="0" y="0" width="1360" height="1220" fill="#ffffff"/>
+<text x="20" y="34" font-family="Helvetica,Arial,sans-serif" font-size="18" font-weight="bold" fill="#1a1a1a">systolic-mm-accelerator: 4x4 array data flow</text>
+<text x="20" y="54" font-family="Helvetica,Arial,sans-serif" font-size="12" fill="#666666">weights stationary; activations flow west-&gt;east; partial sums flow north-&gt;south</text>
+<text x="485.0" y="145" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#333" text-anchor="middle">weight_col_in[0]</text>
+<path d="M 485.0 160 L 485.0 200" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="633.0" y="145" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#333" text-anchor="middle">weight_col_in[1]</text>
+<path d="M 633.0 160 L 633.0 200" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="781.0" y="145" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#333" text-anchor="middle">weight_col_in[2]</text>
+<path d="M 781.0 160 L 781.0 200" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="929.0" y="145" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#333" text-anchor="middle">weight_col_in[3]</text>
+<path d="M 929.0 160 L 929.0 200" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="60" y="253.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#333" text-anchor="middle">act_row_in[0]</text>
+<path d="M 120 265.0 L 420 265.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="30" y="388.0" width="150" height="50" rx="8" ry="8" fill="#ffe6cc" stroke="#d97706" stroke-width="1.5"/>
+<text x="105.0" y="416.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">delay 1 cycle</text>
+<text x="105.0" y="378.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#333" text-anchor="middle">act_row_in[1]</text>
+<path d="M 180 413.0 L 420 413.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="30" y="536.0" width="150" height="50" rx="8" ry="8" fill="#ffe6cc" stroke="#d97706" stroke-width="1.5"/>
+<text x="105.0" y="564.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">delay 2 cycles</text>
+<text x="105.0" y="526.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#333" text-anchor="middle">act_row_in[2]</text>
+<path d="M 180 561.0 L 420 561.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="30" y="684.0" width="150" height="50" rx="8" ry="8" fill="#ffe6cc" stroke="#d97706" stroke-width="1.5"/>
+<text x="105.0" y="712.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">delay 3 cycles</text>
+<text x="105.0" y="674.0" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#333" text-anchor="middle">act_row_in[3]</text>
+<path d="M 180 709.0 L 420 709.0" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="420" y="200" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="485.0" y="261.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[0][0]</text>
+<text x="485.0" y="274.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[0][0]</text>
+<path d="M 550 265.0 L 568 265.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M 485.0 330 L 485.0 348" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="568" y="200" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="633.0" y="261.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[0][1]</text>
+<text x="633.0" y="274.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[0][1]</text>
+<path d="M 698 265.0 L 716 265.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M 633.0 330 L 633.0 348" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="716" y="200" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="781.0" y="261.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[0][2]</text>
+<text x="781.0" y="274.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[0][2]</text>
+<path d="M 846 265.0 L 864 265.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M 781.0 330 L 781.0 348" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="864" y="200" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="929.0" y="261.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[0][3]</text>
+<text x="929.0" y="274.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[0][3]</text>
+<path d="M 929.0 330 L 929.0 348" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="420" y="348" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="485.0" y="409.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[1][0]</text>
+<text x="485.0" y="422.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[1][0]</text>
+<path d="M 550 413.0 L 568 413.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M 485.0 478 L 485.0 496" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="568" y="348" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="633.0" y="409.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[1][1]</text>
+<text x="633.0" y="422.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[1][1]</text>
+<path d="M 698 413.0 L 716 413.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M 633.0 478 L 633.0 496" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="716" y="348" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="781.0" y="409.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[1][2]</text>
+<text x="781.0" y="422.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[1][2]</text>
+<path d="M 846 413.0 L 864 413.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M 781.0 478 L 781.0 496" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="864" y="348" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="929.0" y="409.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[1][3]</text>
+<text x="929.0" y="422.8333333333333" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[1][3]</text>
+<path d="M 929.0 478 L 929.0 496" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="420" y="496" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="485.0" y="557.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[2][0]</text>
+<text x="485.0" y="570.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[2][0]</text>
+<path d="M 550 561.0 L 568 561.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M 485.0 626 L 485.0 644" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="568" y="496" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="633.0" y="557.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[2][1]</text>
+<text x="633.0" y="570.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[2][1]</text>
+<path d="M 698 561.0 L 716 561.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M 633.0 626 L 633.0 644" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="716" y="496" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="781.0" y="557.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[2][2]</text>
+<text x="781.0" y="570.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[2][2]</text>
+<path d="M 846 561.0 L 864 561.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<path d="M 781.0 626 L 781.0 644" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="864" y="496" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="929.0" y="557.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[2][3]</text>
+<text x="929.0" y="570.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[2][3]</text>
+<path d="M 929.0 626 L 929.0 644" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="420" y="644" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="485.0" y="705.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[3][0]</text>
+<text x="485.0" y="718.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[3][0]</text>
+<path d="M 550 709.0 L 568 709.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="568" y="644" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="633.0" y="705.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[3][1]</text>
+<text x="633.0" y="718.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[3][1]</text>
+<path d="M 698 709.0 L 716 709.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="716" y="644" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="781.0" y="705.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[3][2]</text>
+<text x="781.0" y="718.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[3][2]</text>
+<path d="M 846 709.0 L 864 709.0" fill="none" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+<rect x="864" y="644" width="130" height="130" rx="8" ry="8" fill="#c7d2fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="929.0" y="705.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">PE[3][3]</text>
+<text x="929.0" y="718.8333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="bold" fill="#1a1a1a" text-anchor="middle">W[3][3]</text>
+<rect x="410" y="807" width="150" height="55" rx="8" ry="8" fill="#ffe6cc" stroke="#d97706" stroke-width="1.5"/>
+<text x="485.0" y="831.5" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">deskew</text>
+<text x="485.0" y="843.5" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">3 cycles</text>
+<path d="M 485.0 774 L 485.0 807" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="558" y="807" width="150" height="55" rx="8" ry="8" fill="#ffe6cc" stroke="#d97706" stroke-width="1.5"/>
+<text x="633.0" y="831.5" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">deskew</text>
+<text x="633.0" y="843.5" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">2 cycles</text>
+<path d="M 633.0 774 L 633.0 807" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="706" y="807" width="150" height="55" rx="8" ry="8" fill="#ffe6cc" stroke="#d97706" stroke-width="1.5"/>
+<text x="781.0" y="831.5" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">deskew</text>
+<text x="781.0" y="843.5" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#1a1a1a" text-anchor="middle">1 cycle</text>
+<path d="M 781.0 774 L 781.0 807" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="929.0" y="832" font-family="Helvetica,Arial,sans-serif" font-size="9" fill="#666" text-anchor="middle">no deskew
+(already aligned)</text>
+<path d="M 929.0 774 L 929.0 852" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="390" y="902" width="634" height="60" rx="8" ry="8" fill="#fde68a" stroke="#64748b" stroke-width="1.5"/>
+<text x="707.0" y="935.3333333333334" font-family="Helvetica,Arial,sans-serif" font-size="10" fill="#1a1a1a" text-anchor="middle">quantize(): Q18.16 -&gt; Q8.8, round-half-away-from-zero, saturate (once, here -- not per PE)</text>
+<path d="M 485.0 862 L 485.0 902" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M 633.0 862 L 633.0 902" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M 781.0 862 L 781.0 902" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M 929.0 862 L 929.0 902" fill="none" stroke="#333" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="570" y="1002" width="400" height="55" rx="8" ry="8" fill="#99f6e4" stroke="#64748b" stroke-width="1.5"/>
+<text x="770.0" y="1033.1666666666667" font-family="Helvetica,Arial,sans-serif" font-size="11" font-weight="bold" fill="#1a1a1a" text-anchor="middle">m_axis_result_tdata / tvalid / tlast</text>
+<path d="M 707.0 962 L 770.0 1002" fill="none" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="390" y="1097" width="14" height="14" fill="#c7d2fe" stroke="#64748b" stroke-width="1.25"/>
+<text x="412" y="1108" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#333333">PE -- one MAC each, holds its weight for the whole run</text>
+<rect x="390" y="1115" width="14" height="14" fill="#ffe6cc" stroke="#d97706" stroke-width="1.25"/>
+<text x="412" y="1126" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#333333">Skew / deskew delay stages (pipeline registers, not FIFOs)</text>
+<rect x="390" y="1133" width="14" height="14" fill="#fde68a" stroke="#64748b" stroke-width="1.25"/>
+<text x="412" y="1144" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#333333">Output quantization -- once per element, after deskew</text>
+<rect x="390" y="1151" width="14" height="14" fill="#99f6e4" stroke="#64748b" stroke-width="1.25"/>
+<text x="412" y="1162" font-family="Helvetica,Arial,sans-serif" font-size="11" fill="#333333">AXI4-Stream result port</text>
+</svg>
