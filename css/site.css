@@ -146,6 +146,10 @@ p { text-wrap: pretty; }
   letter-spacing: -0.015em;
 }
 .nav-name:hover { text-decoration: none; color: #fff; }
+/* The name shows once: the hero carries it, and the nav takes it over after the hero's headline scrolls away */
+.js .nav-name { transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
+.js .nav:not(.is-past-hero) .nav-name { opacity: 0; visibility: hidden; }
+.js .nav.is-past-hero .nav-name { transition: opacity 0.3s ease; }
 
 .nav-links { display: flex; gap: 30px; margin: 0; padding: 0; list-style: none; font-size: 0.8125rem; }
 .nav-links a {
@@ -264,7 +268,7 @@ p { text-wrap: pretty; }
   margin: 0 auto;
 }
 
-/* Two-tone headline: the name in white, the discipline in grey, one size and one weight */
+/* Two-tone headline: the name in white, the one-liner in grey, one size and one weight */
 .hero-title {
   margin: 0;
   color: var(--text-2);
@@ -275,16 +279,6 @@ p { text-wrap: pretty; }
   text-wrap: balance;
 }
 .hero-name { display: block; color: var(--text); }
-
-.hero-sub {
-  max-width: 23em;
-  margin: 1.35rem 0 0;
-  color: var(--text-2);
-  font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.25rem);
-  line-height: 1.45;
-  letter-spacing: -0.013em;
-  text-wrap: balance;
-}
 
 .hero-actions {
   display: flex;

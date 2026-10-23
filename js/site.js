@@ -86,8 +86,10 @@
   });
 
   const navTargets = navLinks.map((a) => ({ a, el: doc.getElementById(a.hash.slice(1)) })).filter((t) => t.el);
+  const heroTitle = $("#hero-title");
   function updateNav() {
     nav.classList.toggle("is-scrolled", scrollY > 8);
+    nav.classList.toggle("is-past-hero", heroTitle.getBoundingClientRect().bottom < nav.offsetHeight);
     const line = innerHeight * 0.4;
     let current = null;
     for (const t of navTargets) if (t.el.getBoundingClientRect().top <= line) current = t;
