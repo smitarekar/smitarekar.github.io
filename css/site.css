@@ -243,9 +243,6 @@ p { text-wrap: pretty; }
 .spec > div:last-child { border-bottom: 1px solid var(--line); }
 .spec dt { color: var(--text-3); font-size: 0.875rem; line-height: 1.5; padding-top: 0.1em; }
 .spec dd { margin: 0; color: var(--text); font-size: 0.9375rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
-.spec--wide > div { grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); }
-.spec--wide dt { color: var(--text); font-size: 0.9375rem; font-weight: 500; }
-.spec--wide dd { color: var(--text-2); }
 .when { display: block; margin-top: 0.15rem; color: var(--text-3); font-size: 0.875rem; }
 
 /* ---------------------------------------------------------------- Hero: the real layout as a specimen */
@@ -956,7 +953,7 @@ p { text-wrap: pretty; }
   right: max(var(--gutter), calc((100% - 1120px) / 2));
   top: calc(var(--nav-h) + clamp(16px, 3vh, 32px));
   margin: 0;
-  color: rgb(170 182 210 / 0.82);
+  color: rgb(170 182 210 / 0.8);
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -1217,7 +1214,6 @@ p { text-wrap: pretty; }
   .no-js .nav-links a { font-size: 0.8125rem; font-weight: 400; }
 
   .spec > div { grid-template-columns: 5.75rem minmax(0, 1fr); gap: 0.75rem; }
-  .spec--wide > div { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
 
   .plot-body { aspect-ratio: var(--ar-m, var(--ar)); }
   .tl-readout { flex-direction: column; gap: 0.2rem; }
