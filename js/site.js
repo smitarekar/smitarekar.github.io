@@ -263,7 +263,7 @@
       scrollQueued = false;
       updateNav();
       pickChapter();
-      pickShip();
+      pickSpine();
       pickLayer();
       updateNight();
     });
@@ -283,7 +283,7 @@
     }, 120);
   });
 
-  /* ------------------------------------------------------------ Shipped: one scope, nine traces */
+  /* ------------------------------------------------------------ Shipped: nine spines, opened in turn by scroll */
 
   function mulberry32(seed) {
     return () => {
@@ -294,139 +294,91 @@
     };
   }
 
-  // The list picks what the scope shows: the item crossing the reading line, or the one under the
-  // pointer or keyboard focus. Each new trace sweeps onto the screen like a fresh acquisition.
-  const bench = $("#bench");
-  const benchStage = $(".bench-stage", bench);
-  const traces = new Map($$(".trace", bench).map((t) => [t.dataset.ship, t]));
-  const shipItems = $$(".ship-item", bench);
-  const scopeWhat = $("#scope-what");
-  const scopeMark = $("#scope-mark");
-  let shipActive = shipItems[0].dataset.ship;
-  let shipHover = null;
-  let shipFocus = null; // a keyboard-focused product holds the scope until focus leaves it
-  let shipPin = null; // a tapped item holds the scope while the page scrolls it to the line
-  let pinTimer = 0;
-  let benchSeen = false;
+  // The run pins the stage; scrolling through it opens each spine in turn. A moving mouse, keyboard
+  // focus or a tap can open one directly. A tap scrolls to that spine's place, so scroll and state agree.
+  // Spines outside the open one's role are marked far: on phones they fold to thin edges to make room.
+  // A screen too short to pin a stage (a phone on its side) gets the plain list instead.
+  const spineRun = $("#spine-run");
+  const spines = $$(".spine", spineRun);
+  const spineKeys = $$(".sp-key li", spineRun);
+  let spineOpen = -1;
+  let spineHover = null;
+  let spineFocus = null;
+  let spinePin = null;
+  let spinePinTimer = 0;
+  const mqList = matchMedia("(max-height: 500px)");
+  const syncList = () => spineRun.classList.toggle("is-list", mqList.matches);
+  mqList.addEventListener("change", syncList);
+  syncList();
 
-  function sweepIn(trace) {
-    benchSeen = true; // any acquisition counts as the section's first sweep
-    if (reduce) return;
-    trace.classList.remove("is-swept");
-    void trace.offsetWidth; // restart the acquisition
-    trace.classList.add("is-swept");
+  function setSpine(i) {
+    if (i === spineOpen) return;
+    spineOpen = i;
+    const role = spines[i].dataset.role;
+    spines.forEach((s, k) => {
+      s.classList.toggle("open", k === i);
+      s.classList.toggle("far", s.dataset.role !== role);
+      $(".sp-hit", s).setAttribute("aria-expanded", String(k === i));
+    });
+    spineKeys.forEach((li) => li.classList.toggle("on", li.dataset.role === role));
+  }
+  setSpine(0);
+
+  function spineSpan() {
+    const r = spineRun.getBoundingClientRect();
+    return { r, span: Math.max(1, r.height - (innerHeight - nav.offsetHeight)) };
   }
 
-  function setShip(id) {
-    if (id === shipActive) return;
-    shipActive = id;
-    for (const li of shipItems) li.classList.toggle("is-active", li.dataset.ship === id);
-    for (const [key, t] of traces) t.classList.toggle("is-on", key === id);
-    const li = shipItems.find((x) => x.dataset.ship === id);
-    const trace = traces.get(id);
-    scopeWhat.innerHTML = "";
-    const name = doc.createElement("b");
-    name.textContent = $(".ship-name", li).textContent;
-    scopeWhat.append(name, ` ${trace.dataset.caption}`);
-    scopeMark.hidden = !("illustrative" in trace.dataset);
-    sweepIn(trace);
-  }
-
-  function shipLine() {
-    const base = mqNarrow.matches ? benchStage.getBoundingClientRect().bottom + 48 : innerHeight * 0.5;
-    // The line slides down as the pinned stretch runs out, so the last product reaches it just as the
-    // scope lets go: every product gets its turn, in order, with no empty tail under the list.
-    const b = bench.getBoundingClientRect();
-    const last = shipItems[shipItems.length - 1].getBoundingClientRect();
-    const release = nav.offsetHeight + benchStage.offsetHeight;
-    const end = release - (b.bottom - last.top) + 160;
-    if (end <= base) return base;
-    const span = b.height - benchStage.offsetHeight;
-    const p = span > 0 ? clamp((nav.offsetHeight - b.top) / span, 0, 1) : 0;
-    return base + (end - base) * p;
-  }
-
-  function pickShip() {
-    const r = bench.getBoundingClientRect();
+  function pickSpine() {
+    const { r, span } = spineSpan();
     if (r.bottom < -200 || r.top > innerHeight + 200) return;
-    if (!benchSeen && r.top < innerHeight * 0.7) {
-      benchSeen = true;
-      sweepIn(traces.get(shipActive));
-    }
-    if (shipHover || shipFocus || shipPin) return;
-    let id = shipItems[0].dataset.ship;
-    if (mqNarrow.matches) {
-      // Phones: the lit product is the topmost one whose name still shows below the pinned scope,
-      // so the name and rule are always visible next to the trace they belong to.
-      const floor = benchStage.getBoundingClientRect().bottom + 20;
-      id = shipItems[shipItems.length - 1].dataset.ship;
-      for (const li of shipItems) {
-        if (li.getBoundingClientRect().top >= floor) { id = li.dataset.ship; break; }
-      }
-    } else {
-      const line = shipLine();
-      for (const li of shipItems) if (li.getBoundingClientRect().top <= line) id = li.dataset.ship;
-    }
-    setShip(id);
+    if (spineHover !== null || spineFocus !== null || spinePin !== null) return;
+    const p = clamp((nav.offsetHeight - r.top) / span, 0, 0.9999);
+    setSpine(Math.floor(p * spines.length));
   }
 
-  // Hover counts only when the mouse itself moves: content scrolling under a resting cursor must not
-  // steal the scope from the reading line. Any scroll hands control back to the line.
-  addEventListener("scroll", () => { shipHover = null; }, { passive: true });
-  for (const li of shipItems) {
-    li.addEventListener("pointermove", (e) => {
-      if (e.pointerType !== "mouse" || (!e.movementX && !e.movementY) || shipHover === li.dataset.ship) return;
-      shipHover = li.dataset.ship;
-      setShip(shipHover);
-    });
-    li.addEventListener("pointerleave", () => {
-      if (!shipHover) return;
-      shipHover = null;
-      pickShip();
-    });
-    li.addEventListener("focusin", () => { shipFocus = li.dataset.ship; setShip(shipFocus); });
-    li.addEventListener("focusout", () => { shipFocus = null; pickShip(); });
-    li.addEventListener("click", () => {
-      const r = li.getBoundingClientRect();
-      const top = scrollY + r.top - shipLine() + 2;
-      shipPin = li.dataset.ship;
-      clearTimeout(pinTimer);
-      pinTimer = setTimeout(() => { shipPin = null; pickShip(); }, 900);
-      if (Math.abs(r.top - shipLine()) > 24) scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
-      setShip(li.dataset.ship);
-    });
+  // Content scrolling under a resting cursor must not count as hover; any scroll hands control back.
+  // After a tap the pin holds until its smooth scroll has settled, so the spines don't flicker past.
+  function releasePin(ms) {
+    clearTimeout(spinePinTimer);
+    spinePinTimer = setTimeout(() => { spinePin = null; pickSpine(); }, ms);
   }
-
-  for (const body of $$(".plot-body[data-scrub]")) {
-    const [x0, x1] = body.dataset.x.split(" ").map(Number);
-    const [y0, y1] = body.dataset.y.split(" ").map(Number);
-    const [bl, br, bt, bb] = body.dataset.box.split(" ").map(Number);
-    const series = body.dataset.series.split(" ").map(Number);
-    const unitX = body.dataset.unitX;
-    const unitY = body.dataset.unitY;
-    const line = doc.createElement("span");
-    line.className = "scrub";
-    line.setAttribute("aria-hidden", "true");
-    line.innerHTML = '<span class="scrub-dot"></span><span class="scrub-probe"></span>';
-    body.append(line);
-    const dot = line.firstChild;
-    const readout = line.lastChild;
-    body.addEventListener("pointermove", (e) => {
-      if (e.pointerType !== "mouse" || !mqFine.matches) return;
-      const r = body.getBoundingClientRect();
-      const fx = clamp(((e.clientX - r.left) / r.width) * 100, bl, br);
-      const t = x0 + ((fx - bl) / (br - bl)) * (x1 - x0);
-      const k = ((t - x0) / (x1 - x0)) * (series.length - 1);
-      const i = Math.min(series.length - 2, Math.floor(k));
-      const y = series[i] + (series[i + 1] - series[i]) * (k - i);
-      line.style.transform = `translateX(${((fx / 100) * r.width).toFixed(1)}px)`;
-      dot.style.top = `${(bb - ((y - y0) / (y1 - y0)) * (bb - bt)).toFixed(2)}%`;
-      readout.style.transform = `translateX(${fx > 82 ? -100 : fx < 18 ? 0 : -50}%)`;
-      readout.textContent = `t ${t.toFixed(1)} ${unitX} · ${y.toFixed(1)} ${unitY}`;
-      body.classList.add("is-scrubbing");
+  addEventListener("scroll", () => {
+    spineHover = null;
+    if (spinePin !== null) releasePin(160);
+  }, { passive: true });
+  spines.forEach((s, i) => {
+    const hit = $(".sp-hit", s);
+    s.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse" || (!e.movementX && !e.movementY) || spineHover === i) return;
+      spineHover = i;
+      setSpine(i);
     });
-    body.addEventListener("pointerleave", () => body.classList.remove("is-scrubbing"));
-  }
+    s.addEventListener("pointerleave", () => {
+      if (spineHover === null) return;
+      spineHover = null;
+      pickSpine();
+    });
+    hit.addEventListener("focus", () => {
+      if (!hit.matches(":focus-visible")) return; // keyboard only; a click focuses too
+      spineFocus = i;
+      setSpine(i);
+    });
+    hit.addEventListener("blur", () => {
+      if (spineFocus === null) return;
+      spineFocus = null;
+      pickSpine();
+    });
+    hit.addEventListener("click", () => {
+      if (spineRun.classList.contains("is-list")) return;
+      const { r, span } = spineSpan();
+      spinePin = i;
+      releasePin(900);
+      setSpine(i);
+      const top = scrollY + r.top - nav.offsetHeight + (span * (i + 0.5)) / spines.length;
+      scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
+    });
+  });
 
   /* ------------------------------------------------------------ About: the timeline, a logic-analyzer cursor */
 
@@ -930,7 +882,7 @@
   setActive(null, true);
   updateNav();
   pickChapter();
-  pickShip();
+  pickSpine();
   pickLayer();
   updateNight();
 
