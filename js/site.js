@@ -263,6 +263,7 @@
       scrollQueued = false;
       updateNav();
       pickChapter();
+      pickShip();
       pickLayer();
       updateNight();
     });
@@ -282,7 +283,7 @@
     }, 120);
   });
 
-  /* ------------------------------------------------------------ Shipped: each plot sweeps in once; the scope scrubs */
+  /* ------------------------------------------------------------ Shipped: one scope, nine traces */
 
   function mulberry32(seed) {
     return () => {
@@ -293,18 +294,107 @@
     };
   }
 
-  const plots = $$(".plot");
-  if ("IntersectionObserver" in window && !reduce) {
-    const sweepIO = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (!e.isIntersecting) continue;
-        e.target.classList.add("is-swept");
-        sweepIO.unobserve(e.target);
+  // The list picks what the scope shows: the item crossing the reading line, or the one under the
+  // pointer or keyboard focus. Each new trace sweeps onto the screen like a fresh acquisition.
+  const bench = $("#bench");
+  const benchStage = $(".bench-stage", bench);
+  const traces = new Map($$(".trace", bench).map((t) => [t.dataset.ship, t]));
+  const shipItems = $$(".ship-item", bench);
+  const scopeWhat = $("#scope-what");
+  const scopeMark = $("#scope-mark");
+  let shipActive = shipItems[0].dataset.ship;
+  let shipHover = null;
+  let shipFocus = null; // a keyboard-focused product holds the scope until focus leaves it
+  let shipPin = null; // a tapped item holds the scope while the page scrolls it to the line
+  let pinTimer = 0;
+  let benchSeen = false;
+
+  function sweepIn(trace) {
+    benchSeen = true; // any acquisition counts as the section's first sweep
+    if (reduce) return;
+    trace.classList.remove("is-swept");
+    void trace.offsetWidth; // restart the acquisition
+    trace.classList.add("is-swept");
+  }
+
+  function setShip(id) {
+    if (id === shipActive) return;
+    shipActive = id;
+    for (const li of shipItems) li.classList.toggle("is-active", li.dataset.ship === id);
+    for (const [key, t] of traces) t.classList.toggle("is-on", key === id);
+    const li = shipItems.find((x) => x.dataset.ship === id);
+    const trace = traces.get(id);
+    scopeWhat.innerHTML = "";
+    const name = doc.createElement("b");
+    name.textContent = $(".ship-name", li).textContent;
+    scopeWhat.append(name, ` ${trace.dataset.caption}`);
+    scopeMark.hidden = !("illustrative" in trace.dataset);
+    sweepIn(trace);
+  }
+
+  function shipLine() {
+    const base = mqNarrow.matches ? benchStage.getBoundingClientRect().bottom + 48 : innerHeight * 0.5;
+    // The line slides down as the pinned stretch runs out, so the last product reaches it just as the
+    // scope lets go: every product gets its turn, in order, with no empty tail under the list.
+    const b = bench.getBoundingClientRect();
+    const last = shipItems[shipItems.length - 1].getBoundingClientRect();
+    const release = nav.offsetHeight + benchStage.offsetHeight;
+    const end = release - (b.bottom - last.top) + 160;
+    if (end <= base) return base;
+    const span = b.height - benchStage.offsetHeight;
+    const p = span > 0 ? clamp((nav.offsetHeight - b.top) / span, 0, 1) : 0;
+    return base + (end - base) * p;
+  }
+
+  function pickShip() {
+    const r = bench.getBoundingClientRect();
+    if (r.bottom < -200 || r.top > innerHeight + 200) return;
+    if (!benchSeen && r.top < innerHeight * 0.7) {
+      benchSeen = true;
+      sweepIn(traces.get(shipActive));
+    }
+    if (shipHover || shipFocus || shipPin) return;
+    let id = shipItems[0].dataset.ship;
+    if (mqNarrow.matches) {
+      // Phones: the lit product is the topmost one whose name still shows below the pinned scope,
+      // so the name and rule are always visible next to the trace they belong to.
+      const floor = benchStage.getBoundingClientRect().bottom + 20;
+      id = shipItems[shipItems.length - 1].dataset.ship;
+      for (const li of shipItems) {
+        if (li.getBoundingClientRect().top >= floor) { id = li.dataset.ship; break; }
       }
-    }, { threshold: 0.45 });
-    plots.forEach((p) => sweepIO.observe(p));
-  } else {
-    plots.forEach((p) => p.classList.add("is-swept"));
+    } else {
+      const line = shipLine();
+      for (const li of shipItems) if (li.getBoundingClientRect().top <= line) id = li.dataset.ship;
+    }
+    setShip(id);
+  }
+
+  // Hover counts only when the mouse itself moves: content scrolling under a resting cursor must not
+  // steal the scope from the reading line. Any scroll hands control back to the line.
+  addEventListener("scroll", () => { shipHover = null; }, { passive: true });
+  for (const li of shipItems) {
+    li.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse" || (!e.movementX && !e.movementY) || shipHover === li.dataset.ship) return;
+      shipHover = li.dataset.ship;
+      setShip(shipHover);
+    });
+    li.addEventListener("pointerleave", () => {
+      if (!shipHover) return;
+      shipHover = null;
+      pickShip();
+    });
+    li.addEventListener("focusin", () => { shipFocus = li.dataset.ship; setShip(shipFocus); });
+    li.addEventListener("focusout", () => { shipFocus = null; pickShip(); });
+    li.addEventListener("click", () => {
+      const r = li.getBoundingClientRect();
+      const top = scrollY + r.top - shipLine() + 2;
+      shipPin = li.dataset.ship;
+      clearTimeout(pinTimer);
+      pinTimer = setTimeout(() => { shipPin = null; pickShip(); }, 900);
+      if (Math.abs(r.top - shipLine()) > 24) scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
+      setShip(li.dataset.ship);
+    });
   }
 
   for (const body of $$(".plot-body[data-scrub]")) {
@@ -840,6 +930,7 @@
   setActive(null, true);
   updateNav();
   pickChapter();
+  pickShip();
   pickLayer();
   updateNight();
 
