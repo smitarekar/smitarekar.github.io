@@ -263,7 +263,7 @@
       scrollQueued = false;
       updateNav();
       pickChapter();
-      pickSpine();
+      paintDeck();
       pickLayer();
       updateNight();
     });
@@ -283,7 +283,7 @@
     }, 120);
   });
 
-  /* ------------------------------------------------------------ Shipped: nine spines, opened in turn by scroll */
+  /* ------------------------------------------------------------ Shipped: a deck of nine cards */
 
   function mulberry32(seed) {
     return () => {
@@ -294,90 +294,144 @@
     };
   }
 
-  // The run pins the stage; scrolling through it opens each spine in turn. A moving mouse, keyboard
-  // focus or a tap can open one directly. A tap scrolls to that spine's place, so scroll and state agree.
-  // Spines outside the open one's role are marked far: on phones they fold to thin edges to make room.
-  // A screen too short to pin a stage (a phone on its side) gets the plain list instead.
-  const spineRun = $("#spine-run");
-  const spines = $$(".spine", spineRun);
-  const spineKeys = $$(".sp-key li", spineRun);
-  let spineOpen = -1;
-  let spineHover = null;
-  let spineFocus = null;
-  let spinePin = null;
-  let spinePinTimer = 0;
-  const mqList = matchMedia("(max-height: 500px)");
-  const syncList = () => spineRun.classList.toggle("is-list", mqList.matches);
-  mqList.addEventListener("change", syncList);
-  syncList();
+  // The cards are sticky, so the browser itself moves them with the scroll. Script adds two things: a covered
+  // card steps back (a little smaller, a little darker), and when a scroll comes to rest between two cards it
+  // finishes the move to the next card in the direction you were going. The direction comes from the input
+  // itself (wheel delta, finger travel, the key pressed), so a glide cut short by a new scroll never turns
+  // round. Coming back up to the last card it settles onto it; from above it waits until the heading has
+  // gone under the nav. Anywhere else the page scrolls freely.
+  const deck = $("#deck");
+  const cards = $$(".card", deck);
+  const deckHead = $("#shipped .section-head");
+  const mqDeckList = matchMedia("(max-height: 500px)"); // too short for cards: a plain list, no stacking
+  let deckRest = scrollY;  // where the page last came to rest, for scrollbar drags
+  let deckIntent = 0;      // the direction the last input asked for: 1 down, -1 up, 0 unknown
+  let deckGlide = null;    // the slot a settle glide is heading for
+  let deckTouch = false;   // a finger or mouse button is down: never move the page under it
+  let deckNav = false;     // an in-page link is travelling: let it land
+  let deckWait = 200;      // how long a scroll must be still before it counts as resting
+  let deckTimer = 0;
+  let deckFlat = true;
+  let touchY = 0;
 
-  function setSpine(i) {
-    if (i === spineOpen) return;
-    spineOpen = i;
-    const role = spines[i].dataset.role;
-    spines.forEach((s, k) => {
-      s.classList.toggle("open", k === i);
-      s.classList.toggle("far", s.dataset.role !== role);
-      $(".sp-hit", s).setAttribute("aria-expanded", String(k === i));
-    });
-    spineKeys.forEach((li) => li.classList.toggle("on", li.dataset.role === role));
-  }
-  setSpine(0);
-
-  function spineSpan() {
-    const r = spineRun.getBoundingClientRect();
-    return { r, span: Math.max(1, r.height - (innerHeight - nav.offsetHeight)) };
-  }
-
-  function pickSpine() {
-    const { r, span } = spineSpan();
+  function paintDeck() {
+    if (reduce || mqDeckList.matches) {
+      if (!deckFlat) cards.forEach((c) => { c.style.transform = ""; c.style.removeProperty("--shade"); });
+      deckFlat = true;
+      return;
+    }
+    const r = deck.getBoundingClientRect();
     if (r.bottom < -200 || r.top > innerHeight + 200) return;
-    if (spineHover !== null || spineFocus !== null || spinePin !== null) return;
-    const p = clamp((nav.offsetHeight - r.top) / span, 0, 0.9999);
-    setSpine(Math.floor(p * spines.length));
+    deckFlat = false;
+    cards.forEach((c, i) => {
+      const next = cards[i + 1];
+      let cover = 0;
+      if (next) {
+        // How far the next card has slid up over this one, 0 to 1 (tops are unscaled: the origin is the top edge)
+        const h = c.offsetHeight;
+        cover = clamp((c.getBoundingClientRect().top + h - next.getBoundingClientRect().top) / h, 0, 1);
+      }
+      c.style.transform = cover ? `scale(${(1 - cover * 0.05).toFixed(4)})` : "";
+      c.style.setProperty("--shade", (cover * 0.5).toFixed(3));
+    });
   }
 
-  // Content scrolling under a resting cursor must not count as hover; any scroll hands control back.
-  // After a tap the pin holds until its smooth scroll has settled, so the spines don't flicker past.
-  function releasePin(ms) {
-    clearTimeout(spinePinTimer);
-    spinePinTimer = setTimeout(() => { spinePin = null; pickSpine(); }, ms);
+  // The scroll position at which each card settles: its place in the flow minus its sticky top
+  function deckSlots() {
+    const ds = getComputedStyle(deck);
+    const gap = parseFloat(ds.rowGap) || 0;
+    let y = deck.getBoundingClientRect().top + scrollY + parseFloat(ds.paddingTop);
+    return cards.map((c) => {
+      const slot = y - parseFloat(getComputedStyle(c).top);
+      y += c.offsetHeight + gap;
+      return Math.round(slot);
+    });
   }
-  addEventListener("scroll", () => {
-    spineHover = null;
-    if (spinePin !== null) releasePin(160);
+
+  function settleDeck() {
+    if (deckTouch) return; // the finger decides; we look again when it lifts
+    const y = scrollY;
+    if (deckGlide !== null) { deckGlide = null; deckRest = y; return; } // a glide just ended
+    const dir = deckIntent || Math.sign(y - deckRest);
+    deckIntent = 0;
+    deckRest = y;
+    if (!dir || reduce || deckNav || mqDeckList.matches) return;
+    const s = deckSlots();
+    const last = s.length - 1;
+    let target = null;
+    if (dir > 0) {
+      const k = s.findIndex((v) => v >= y - 4);
+      if (k > 0 || (k === 0 && deckHead.getBoundingClientRect().bottom <= nav.offsetHeight)) target = s[k];
+    } else {
+      let k = -1;
+      for (let i = last; i >= 0; i--) if (s[i] <= y + 4) { k = i; break; }
+      if (k >= 0 && (k < last || y < s[last] + innerHeight * 0.2)) target = s[k];
+    }
+    if (target === null || Math.abs(target - y) < 2) return;
+    glideTo(target);
+  }
+  function glideTo(y) {
+    deckGlide = y;
+    deckIntent = 0;
+    scrollTo({ top: y, behavior: "smooth" });
+  }
+  // A new input during a glide takes over from wherever the page is
+  function interrupt() {
+    if (deckGlide !== null) { deckGlide = null; deckRest = scrollY; }
+  }
+  const queueSettle = () => { clearTimeout(deckTimer); deckTimer = setTimeout(settleDeck, deckWait); };
+  addEventListener("scroll", queueSettle, { passive: true });
+  addEventListener("wheel", (e) => {
+    deckNav = false;
+    if (e.buttons === 0) deckTouch = false; // a button release we never saw can't strand the settle
+    interrupt();
+    if (e.deltaY) deckIntent = Math.sign(e.deltaY);
+    deckWait = 260; // wheel notches and resting trackpad fingers can pause this long mid-gesture
   }, { passive: true });
-  spines.forEach((s, i) => {
-    const hit = $(".sp-hit", s);
-    s.addEventListener("pointermove", (e) => {
-      if (e.pointerType !== "mouse" || (!e.movementX && !e.movementY) || spineHover === i) return;
-      spineHover = i;
-      setSpine(i);
-    });
-    s.addEventListener("pointerleave", () => {
-      if (spineHover === null) return;
-      spineHover = null;
-      pickSpine();
-    });
-    hit.addEventListener("focus", () => {
-      if (!hit.matches(":focus-visible")) return; // keyboard only; a click focuses too
-      spineFocus = i;
-      setSpine(i);
-    });
-    hit.addEventListener("blur", () => {
-      if (spineFocus === null) return;
-      spineFocus = null;
-      pickSpine();
-    });
-    hit.addEventListener("click", () => {
-      if (spineRun.classList.contains("is-list")) return;
-      const { r, span } = spineSpan();
-      spinePin = i;
-      releasePin(900);
-      setSpine(i);
-      const top = scrollY + r.top - nav.offsetHeight + (span * (i + 0.5)) / spines.length;
-      scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
-    });
+  addEventListener("touchstart", (e) => {
+    deckTouch = true; deckNav = false; interrupt(); clearTimeout(deckTimer);
+    touchY = e.touches[0].clientY;
+    deckWait = 160; // momentum keeps the scroll events coming until it stops
+  }, { passive: true });
+  const lift = (e) => {
+    deckTouch = false;
+    const t = e && e.changedTouches && e.changedTouches[0];
+    if (t && Math.abs(touchY - t.clientY) > 4) deckIntent = Math.sign(touchY - t.clientY);
+    queueSettle();
+  };
+  addEventListener("touchend", lift, { passive: true });
+  addEventListener("touchcancel", lift, { passive: true });
+  // A held mouse button (dragging the scrollbar) counts like a finger: wait for it to let go
+  addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "mouse") return;
+    deckTouch = true; deckNav = false; interrupt(); deckRest = scrollY; deckWait = 200; clearTimeout(deckTimer);
+  });
+  const letGo = () => { if (deckTouch) lift(); };
+  addEventListener("pointerup", (e) => { if (e.pointerType === "mouse") letGo(); });
+  addEventListener("pointercancel", (e) => { if (e.pointerType === "mouse") letGo(); }); // a touch pointer cancels as soon as the page pans
+  addEventListener("blur", letGo);
+  doc.addEventListener("visibilitychange", letGo);
+  doc.addEventListener("click", (e) => { if (e.target.closest('a[href^="#"]')) deckNav = true; });
+
+  // Inside the deck the page keys step one card at a time, so Space or Page Down never skips one
+  addEventListener("keydown", (e) => {
+    deckNav = false;
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || reduce || mqDeckList.matches) return;
+    const a = doc.activeElement;
+    if (a && a.closest("input, textarea, select, [contenteditable='true'], [role='slider'], dialog")) return; // a focused control keeps its own keys
+    if (e.key === " " && a && a.closest("button, summary")) return; // Space presses a focused button
+    const down = e.key === "PageDown" || e.key === "ArrowDown" || (e.key === " " && !e.shiftKey);
+    const up = e.key === "PageUp" || e.key === "ArrowUp" || (e.key === " " && e.shiftKey);
+    if (!down && !up) { interrupt(); return; }
+    const s = deckSlots();
+    const y = deckGlide !== null ? deckGlide : scrollY; // a second press while gliding goes one further
+    const last = s.length - 1;
+    let target;
+    if (down && y >= s[0] - 4 && y < s[last] - 4) target = s.find((v) => v > y + 4);
+    if (up && y > s[0] + 4 && y <= s[last] + 4) target = [...s].reverse().find((v) => v < y - 4);
+    if (target === undefined) { interrupt(); return; }
+    e.preventDefault();
+    glideTo(target);
   });
 
   /* ------------------------------------------------------------ About: the timeline, a logic-analyzer cursor */
@@ -882,7 +936,7 @@
   setActive(null, true);
   updateNav();
   pickChapter();
-  pickSpine();
+  paintDeck();
   pickLayer();
   updateNight();
 
